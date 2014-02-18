@@ -1,18 +1,33 @@
 package autopowerfisher.Core;
 
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.imageio.ImageIO;
-
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.net.URL;
-import java.awt.Graphics;
 import java.text.DecimalFormat;
+
+import javax.imageio.ImageIO;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 
 import org.parabot.core.ui.components.LogArea;
 import org.parabot.environment.api.interfaces.Paintable;
+//import org.parabot.environment.api.utils.Timer;
 import org.parabot.environment.scripts.Category;
 import org.parabot.environment.scripts.Script;
 import org.parabot.environment.scripts.ScriptManifest;
@@ -20,16 +35,19 @@ import org.rev317.api.methods.BotMouse;
 import org.rev317.api.methods.Skill;
 
 import autopowerfisher.Data.Variables;
-import autopowerfisher.Strategies.AntiBan;
-import autopowerfisher.Strategies.Bass;
-import autopowerfisher.Strategies.Drop;
-import autopowerfisher.Strategies.Lobster;
-import autopowerfisher.Strategies.MonkFish;
-import autopowerfisher.Strategies.Shrimp;
-import autopowerfisher.Strategies.Swordfish;
+import autopowerfisher.Strategies.fish.Bass;
+import autopowerfisher.Strategies.fish.Lobster;
+import autopowerfisher.Strategies.fish.MonkFish;
+import autopowerfisher.Strategies.fish.Shrimp;
+import autopowerfisher.Strategies.fish.SwordFish;
+import autopowerfisher.Strategies.mode.Bank.Banker;
+import autopowerfisher.Strategies.mode.Drop.PowerDrop;
+import autopowerfisher.Strategies.randoms.OldMan;
+import autopowerfisher.Strategies.walk.WalkToBank;
+import autopowerfisher.Strategies.walk.WalkToFish;
 
 @ScriptManifest(author = "Haku", category = Category.FISHING, description = "AIO Fishing just for Parabot.", name = "Auto Fisher", servers = { "PKHonor" }, version = 1.1)
-public class AutoPowerFisher extends Script implements Paintable {
+public class AutoPowerFisher extends Script implements Paintable, MouseListener {
 
 	GUI g = new GUI();
 	public boolean guiwait = true;
@@ -47,6 +65,11 @@ public class AutoPowerFisher extends Script implements Paintable {
 
 	private final Image img1 = getImage("http://i.imgur.com/x3CazTr.png");
 	private final Image img2 = getImage("http://i.imgur.com/3amS1rs.png");
+	
+
+   // public static final Rectangle button = new Rectangle(442, 365, 52, 18);
+   // private final Image img3 = getImage("https://dl.dropboxusercontent.com/s/wjvqlz0eo0eqhnw/v22t.png?dl=1&token_hash=AAEDdMhN2FXWmPf5-4HArzqWia_E_LjtRKYMZH_1aSJ6XA");
+   // public static Timer paintTimer = new Timer();
 
 	public String runTime(long i) {
 		DecimalFormat nf = new DecimalFormat("00");
@@ -75,17 +98,23 @@ public class AutoPowerFisher extends Script implements Paintable {
 		Variables.strategies.add(new Shrimp());
 		Variables.strategies.add(new Lobster());
 		Variables.strategies.add(new Bass());
-		Variables.strategies.add(new Swordfish());
+		Variables.strategies.add(new Lobster());
+		Variables.strategies.add(new SwordFish());
 		Variables.strategies.add(new MonkFish());
-		Variables.strategies.add(new Drop());
-		Variables.strategies.add(new AntiBan());
+		Variables.strategies.add(new PowerDrop());
+		Variables.strategies.add(new Banker());
+		Variables.strategies.add(new WalkToBank());
+		Variables.strategies.add(new WalkToFish());
+		Variables.strategies.add(new OldMan());
 		provide(Variables.strategies);
 		return true;
 	}
 
 	public void paint(Graphics g1) {
 		Graphics2D g = (Graphics2D) g1;
+		if (!Variables.isHidePaint()) {
 		g.drawImage(img1, 0, 337, null);
+		}
 		g.drawImage(img2, BotMouse.getMouseX(), BotMouse.getMouseY(), null);
 		g.setFont(font1);
 		g.setColor(color1);
@@ -104,7 +133,9 @@ public class AutoPowerFisher extends Script implements Paintable {
 		g.drawString("Status:" + Variables.status, 146, 468);
 		g.drawString("Fishing Level:" + Skill.FISHING.getRealLevel(), 18, 467);
 		g.drawString("Fishing like a:" + Variables.funny, 252, 423);
-	}
+}
+
+
 
 	public long getPerHour(long value) {
 		return value * 3600000
@@ -158,8 +189,7 @@ public class AutoPowerFisher extends Script implements Paintable {
 
 			if (mode.equals("Bank")) {
 				Variables.bankMode = true;
-				Variables.walkToBank = true;
-				Variables.walkToFish = true;
+
 			}
 
 			if (mode.equals("Powermode")) {
@@ -168,6 +198,15 @@ public class AutoPowerFisher extends Script implements Paintable {
 		
 			if(antiban.isSelected()) {
 				Variables.antiBan = true;
+			}
+			
+			if(chosen.equals("F1D1")) {
+				Variables.m1d1Mode = true;
+			}
+			
+			if(chosen.equals("Lobster")) {
+				Variables.fishChosen = Variables.lob;
+				Variables.inventoryFish = Variables.lobsterID;
 			}
 
 			guiwait = false;
@@ -199,7 +238,7 @@ public class AutoPowerFisher extends Script implements Paintable {
 
 			// ---- fishToCatch ----
 			fishToCatch.setModel(new DefaultComboBoxModel<>(new String[] {
-					"Select a fish", "Shrimp", "Bass", "SwordFish", "MonkFish",
+					"Select a fish", "Shrimp", "Bass", "Lobster", "SwordFish", "MonkFish",
 					"Shark", "Manta Ray" }));
 			contentPane.add(fishToCatch);
 			fishToCatch.setBounds(25, 65, 135, 25);
@@ -223,7 +262,7 @@ public class AutoPowerFisher extends Script implements Paintable {
 
 			// ---- modeToUse ----
 			modeToUse.setModel(new DefaultComboBoxModel<>(new String[] {
-					"Select a mode", "Bank", "Powermode" }));
+					"Select a mode", "Bank", "Powermode", "F1D1" }));
 			contentPane.add(modeToUse);
 			modeToUse.setBounds(25, 95, 135, 25);
 
@@ -250,5 +289,29 @@ public class AutoPowerFisher extends Script implements Paintable {
 		private JComboBox<String> modeToUse;
 		private JRadioButton randoms;
 		// JFormDesigner - End of variables declaration //GEN-END:variables
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	    }
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		
 	}
 }

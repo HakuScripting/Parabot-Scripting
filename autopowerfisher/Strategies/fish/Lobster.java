@@ -1,4 +1,4 @@
-package autopowerfisher.Strategies;
+package autopowerfisher.Strategies.fish;
 
 import org.parabot.environment.api.utils.Time;
 import org.parabot.environment.scripts.framework.Strategy;
@@ -9,24 +9,24 @@ import org.rev317.api.wrappers.interactive.Npc;
 
 import autopowerfisher.Data.Variables;
 
-public class Shrimp implements Strategy {
+public class Lobster implements Strategy {
 	@Override
 	public boolean activate() {
-		return Variables.fishChosen == Variables.shrimp && !Players.getLocal().isWalking()
-				&& Players.getLocal().getAnimation() == -1
-				&& !Inventory.isFull();
+		return Variables.fishChosen == Variables.lob && !Players.getLocal().isWalking()
+				&& !Inventory.isFull()
+		&& Players.getLocal().getAnimation() == -1;
 	}
 
 	@Override
 	public void execute() {
-		final Npc[] shrimp = Npcs.getNearest(Variables.fishChosen);
-		if (shrimp[0].isOnScreen()) {
+		for(Npc Lobster : Npcs.getNearest(Variables.lob)) {
+		if (Lobster.isOnScreen()) {
 			Variables.status = "Fishing";
-			shrimp[0].interact("Net");
+			Lobster.interact("Cage");
 			Variables.caught++;
 			Variables.funny = "Baws";
 			Time.sleep(1000, 2000);
 		}
-
+	}
 	}
 }

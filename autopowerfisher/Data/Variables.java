@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import org.parabot.environment.scripts.framework.Strategy;
+import org.rev317.api.wrappers.interactive.Npc;
 import org.rev317.api.wrappers.scene.Area;
 import org.rev317.api.wrappers.scene.Tile;
 
 public class Variables {
-	
+
 	public static ArrayList<Strategy> strategies = new ArrayList<Strategy>();
 
-	
 	public static String status;
 	public static String funny;
 	public static int Level;
@@ -20,6 +20,8 @@ public class Variables {
 
 	public static int caught = 0;
 	public static int dropped = 0;
+	
+	public static Npc npc32;
 
 	public int startExp;
 	public int currentExp;
@@ -28,27 +30,31 @@ public class Variables {
 	public static int fishChosen;
 	public static int inventoryFish;
 
+	public static boolean hidePaint;
+	public static boolean closePaint;
+
 	public static boolean bankMode = false;
 	public static boolean powerMode = false;
+	public static boolean m1d1Mode = false;
 
 	public static boolean walkToFish = false;
 	public static boolean walkToBank = false;
-	
+
 	public static boolean antiBan = false;
-	
+
 	Random generator = new Random();
-	
+
 	public static int randomNumber;
-	
+
 	public static Area BANKAREA = new Area(new Tile(2813, 3437, 0), new Tile(
 			2813, 3446, 0), new Tile(2805, 3446, 0), new Tile(2805, 3437, 0));
 
 	// Path's
-	public static Tile[] PATH_TO_BANK = { new Tile(2825, 3436, 0),
-			new Tile(2812, 3436, 0), new Tile(2809, 3441, 0) };
-	public static  Tile[] PATH_TO_FISH = { new Tile(2821, 3436, 0),
-			new Tile(2834, 3434, 0) };
-	
+	public static Tile[] PATH_TO_BANK = { new Tile(2827, 3436, 0),
+			new Tile(2817, 3437, 0), new Tile(2811, 3441, 0) };
+	public static Tile[] PATH_TO_FISH = { new Tile(2815, 3437, 0),
+			new Tile(2824, 3437, 0), new Tile(2835, 3434, 0) };
+
 	public static int shrimp = 316;
 	public static int sword = 324;
 	public static int lob = 324;
@@ -58,7 +64,7 @@ public class Variables {
 	public static int shark = 334;
 
 	// Equipment check
-	public static int[] eqipmentID = { 303 };
+	public static int[] eqipmentID = { 303, 311, 301 };
 
 	// Fish ID's
 	public static int shrimpID = 317;
@@ -69,7 +75,6 @@ public class Variables {
 	public static int sharkID = 0;
 
 	public static int[] fishIDs = { 317, 363, 377, 371, 7944 };
-
 
 	public static int bankID = 2213;
 
@@ -395,4 +400,35 @@ public class Variables {
 		Variables.randomNumber = randomNumber;
 	}
 
+	static boolean isM1d1Mode() {
+		return m1d1Mode;
+	}
+
+	static void setM1d1Mode(boolean m1d1Mode) {
+		Variables.m1d1Mode = m1d1Mode;
+	}
+
+	public static void setHidePaint(boolean hidePaint) {
+		Variables.hidePaint = hidePaint;
+	}
+
+	static void setClosePaint(boolean closePaint) {
+		Variables.closePaint = closePaint;
+	}
+
+	public static boolean isHidePaint() {
+		return hidePaint;
+	}
+
+	static boolean isClosePaint() {
+		return closePaint;
+	}
+
+	Npc getNpc32() {
+		return npc32;
+	}
+
+	void setNpc32(Npc npc32) {
+		Variables.npc32 = npc32;
+	}
 }
